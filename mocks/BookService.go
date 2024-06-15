@@ -6,6 +6,7 @@ import (
 	dto "gin-go-testing/model/dto"
 
 	gin "github.com/gin-gonic/gin"
+	errs "github.com/rulyadhika/go-custom-err/errs"
 
 	mock "github.com/stretchr/testify/mock"
 )
@@ -16,7 +17,7 @@ type BookService struct {
 }
 
 // Create provides a mock function with given fields: ctx, bookDto
-func (_m *BookService) Create(ctx *gin.Context, bookDto *dto.NewBookRequest) (*dto.BookResponse, error) {
+func (_m *BookService) Create(ctx *gin.Context, bookDto *dto.NewBookRequest) (*dto.BookResponse, errs.CustomError) {
 	ret := _m.Called(ctx, bookDto)
 
 	if len(ret) == 0 {
@@ -24,8 +25,8 @@ func (_m *BookService) Create(ctx *gin.Context, bookDto *dto.NewBookRequest) (*d
 	}
 
 	var r0 *dto.BookResponse
-	var r1 error
-	if rf, ok := ret.Get(0).(func(*gin.Context, *dto.NewBookRequest) (*dto.BookResponse, error)); ok {
+	var r1 errs.CustomError
+	if rf, ok := ret.Get(0).(func(*gin.Context, *dto.NewBookRequest) (*dto.BookResponse, errs.CustomError)); ok {
 		return rf(ctx, bookDto)
 	}
 	if rf, ok := ret.Get(0).(func(*gin.Context, *dto.NewBookRequest) *dto.BookResponse); ok {
@@ -36,17 +37,19 @@ func (_m *BookService) Create(ctx *gin.Context, bookDto *dto.NewBookRequest) (*d
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*gin.Context, *dto.NewBookRequest) error); ok {
+	if rf, ok := ret.Get(1).(func(*gin.Context, *dto.NewBookRequest) errs.CustomError); ok {
 		r1 = rf(ctx, bookDto)
 	} else {
-		r1 = ret.Error(1)
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(errs.CustomError)
+		}
 	}
 
 	return r0, r1
 }
 
 // FindAll provides a mock function with given fields: ctx
-func (_m *BookService) FindAll(ctx *gin.Context) ([]*dto.BookResponse, error) {
+func (_m *BookService) FindAll(ctx *gin.Context) ([]*dto.BookResponse, errs.CustomError) {
 	ret := _m.Called(ctx)
 
 	if len(ret) == 0 {
@@ -54,8 +57,8 @@ func (_m *BookService) FindAll(ctx *gin.Context) ([]*dto.BookResponse, error) {
 	}
 
 	var r0 []*dto.BookResponse
-	var r1 error
-	if rf, ok := ret.Get(0).(func(*gin.Context) ([]*dto.BookResponse, error)); ok {
+	var r1 errs.CustomError
+	if rf, ok := ret.Get(0).(func(*gin.Context) ([]*dto.BookResponse, errs.CustomError)); ok {
 		return rf(ctx)
 	}
 	if rf, ok := ret.Get(0).(func(*gin.Context) []*dto.BookResponse); ok {
@@ -66,17 +69,19 @@ func (_m *BookService) FindAll(ctx *gin.Context) ([]*dto.BookResponse, error) {
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*gin.Context) error); ok {
+	if rf, ok := ret.Get(1).(func(*gin.Context) errs.CustomError); ok {
 		r1 = rf(ctx)
 	} else {
-		r1 = ret.Error(1)
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(errs.CustomError)
+		}
 	}
 
 	return r0, r1
 }
 
 // FindOneById provides a mock function with given fields: ctx, bookId
-func (_m *BookService) FindOneById(ctx *gin.Context, bookId uint) (*dto.BookResponse, error) {
+func (_m *BookService) FindOneById(ctx *gin.Context, bookId uint) (*dto.BookResponse, errs.CustomError) {
 	ret := _m.Called(ctx, bookId)
 
 	if len(ret) == 0 {
@@ -84,8 +89,8 @@ func (_m *BookService) FindOneById(ctx *gin.Context, bookId uint) (*dto.BookResp
 	}
 
 	var r0 *dto.BookResponse
-	var r1 error
-	if rf, ok := ret.Get(0).(func(*gin.Context, uint) (*dto.BookResponse, error)); ok {
+	var r1 errs.CustomError
+	if rf, ok := ret.Get(0).(func(*gin.Context, uint) (*dto.BookResponse, errs.CustomError)); ok {
 		return rf(ctx, bookId)
 	}
 	if rf, ok := ret.Get(0).(func(*gin.Context, uint) *dto.BookResponse); ok {
@@ -96,10 +101,12 @@ func (_m *BookService) FindOneById(ctx *gin.Context, bookId uint) (*dto.BookResp
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*gin.Context, uint) error); ok {
+	if rf, ok := ret.Get(1).(func(*gin.Context, uint) errs.CustomError); ok {
 		r1 = rf(ctx, bookId)
 	} else {
-		r1 = ret.Error(1)
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(errs.CustomError)
+		}
 	}
 
 	return r0, r1

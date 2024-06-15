@@ -6,6 +6,7 @@ import (
 	"gin-go-testing/repository"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rulyadhika/go-custom-err/errs"
 )
 
 type bookServiceImpl struct {
@@ -16,7 +17,7 @@ func NewBookServiceImpl(br repository.BookRepository) BookService {
 	return &bookServiceImpl{br}
 }
 
-func (b *bookServiceImpl) Create(ctx *gin.Context, bookDto *dto.NewBookRequest) (*dto.BookResponse, error) {
+func (b *bookServiceImpl) Create(ctx *gin.Context, bookDto *dto.NewBookRequest) (*dto.BookResponse, errs.CustomError) {
 	book := &domain.Book{Title: bookDto.Title, Author: bookDto.Author}
 
 	result, err := b.br.Create(ctx, book)
@@ -28,7 +29,7 @@ func (b *bookServiceImpl) Create(ctx *gin.Context, bookDto *dto.NewBookRequest) 
 	return &dto.BookResponse{Id: result.Id, Title: result.Title, Author: result.Author}, nil
 }
 
-func (b *bookServiceImpl) FindOneById(ctx *gin.Context, bookId uint) (*dto.BookResponse, error) {
+func (b *bookServiceImpl) FindOneById(ctx *gin.Context, bookId uint) (*dto.BookResponse, errs.CustomError) {
 	result, err := b.br.FindOneById(ctx, bookId)
 
 	if err != nil {
@@ -38,7 +39,7 @@ func (b *bookServiceImpl) FindOneById(ctx *gin.Context, bookId uint) (*dto.BookR
 	return &dto.BookResponse{Id: result.Id, Title: result.Title, Author: result.Author}, nil
 }
 
-func (b *bookServiceImpl) FindAll(ctx *gin.Context) ([]*dto.BookResponse, error) {
+func (b *bookServiceImpl) FindAll(ctx *gin.Context) ([]*dto.BookResponse, errs.CustomError) {
 	result, err := b.br.FindAll(ctx)
 
 	if err != nil {

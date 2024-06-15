@@ -4,6 +4,7 @@ go 1.21.5
 
 require (
 	github.com/gin-gonic/gin v1.10.0
+	github.com/rulyadhika/go-custom-err v0.0.1
 	github.com/stretchr/testify v1.9.0
 )
 
