@@ -6,6 +6,7 @@ import (
 	"gin-go-testing/model/dto"
 	"testing"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/gin-gonic/gin"
 	"github.com/rulyadhika/go-custom-err/errs"
 	"github.com/stretchr/testify/mock"
@@ -26,8 +27,10 @@ func TestUnitTestBookService(t *testing.T) {
 func (u *unitTestBookServiceSuite) SetupTest() {
 	bookRepoMock := mocks.NewBookRepository(u.T())
 
+	db, _, _ := sqlmock.New()
+
 	u.brm = bookRepoMock
-	u.bs = NewBookServiceImpl(bookRepoMock)
+	u.bs = NewBookServiceImpl(bookRepoMock, db)
 
 	u.ctx = &gin.Context{}
 }
@@ -37,7 +40,7 @@ func (u *unitTestBookServiceSuite) TestCreate_Success() {
 	reqDto := &dto.NewBookRequest{Title: data.Title, Author: data.Author}
 	expected := &dto.BookResponse{Id: data.Id, Title: data.Title, Author: data.Author}
 
-	u.brm.On("Create", u.ctx, mock.Anything).Return(data, nil)
+	u.brm.On("Create", u.ctx, mock.Anything, mock.Anything).Return(data, nil)
 
 	result, err := u.bs.Create(u.ctx, reqDto)
 	u.Nil(err)
@@ -51,7 +54,7 @@ func (u *unitTestBookServiceSuite) TestCreate_Failed() {
 	data := &domain.Book{Id: 2, Title: "The 7 Habits of Highly Effective People", Author: "Stephen R. Covey"}
 	reqDto := &dto.NewBookRequest{Title: data.Title, Author: data.Author}
 
-	u.brm.On("Create", u.ctx, mock.Anything).Return(nil, errs.NewInternalServerError("something went wrong"))
+	u.brm.On("Create", u.ctx, mock.Anything, mock.Anything).Return(nil, errs.NewInternalServerError("something went wrong"))
 
 	result, err := u.bs.Create(u.ctx, reqDto)
 	u.NotNil(err)
@@ -64,7 +67,7 @@ func (u *unitTestBookServiceSuite) TestFindOneById_Success() {
 	data := &domain.Book{Id: 1, Title: "Atomic Habits: An Easy & Proven Way to Build Good Habits & Break Bad Ones", Author: "James Clear"}
 	expected := &dto.BookResponse{Id: data.Id, Title: data.Title, Author: data.Author}
 
-	u.brm.On("FindOneById", u.ctx, mock.Anything).Return(data, nil)
+	u.brm.On("FindOneById", u.ctx, mock.Anything, mock.Anything).Return(data, nil)
 
 	result, err := u.bs.FindOneById(u.ctx, 1)
 
@@ -76,7 +79,7 @@ func (u *unitTestBookServiceSuite) TestFindOneById_Success() {
 }
 
 func (u *unitTestBookServiceSuite) TestFindOneById_NotFound() {
-	u.brm.On("FindOneById", u.ctx, mock.Anything).Return(nil, errs.NewNotFoundError("data not found"))
+	u.brm.On("FindOneById", u.ctx, mock.Anything, mock.Anything).Return(nil, errs.NewNotFoundError("data not found"))
 
 	result, err := u.bs.FindOneById(u.ctx, 2)
 
@@ -106,7 +109,7 @@ func (u *unitTestBookServiceSuite) TestFindAll_Success() {
 		expected = append(expected, &dto.BookResponse{Id: e.Id, Title: e.Title, Author: e.Author})
 	}
 
-	u.brm.On("FindAll", u.ctx).Return(data, nil)
+	u.brm.On("FindAll", u.ctx, mock.Anything).Return(data, nil)
 
 	result, err := u.bs.FindAll(u.ctx)
 
@@ -118,7 +121,7 @@ func (u *unitTestBookServiceSuite) TestFindAll_Success() {
 }
 
 func (u *unitTestBookServiceSuite) TestFindAll_Failed() {
-	u.brm.On("FindAll", u.ctx).Return(nil, errs.NewInternalServerError("something went wrong"))
+	u.brm.On("FindAll", u.ctx, mock.Anything).Return(nil, errs.NewInternalServerError("something went wrong"))
 
 	result, err := u.bs.FindAll(u.ctx)
 

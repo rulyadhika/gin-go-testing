@@ -1,6 +1,7 @@
 package service
 
 import (
+	"database/sql"
 	"gin-go-testing/model/domain"
 	"gin-go-testing/model/dto"
 	"gin-go-testing/repository"
@@ -11,16 +12,17 @@ import (
 
 type bookServiceImpl struct {
 	br repository.BookRepository
+	db *sql.DB
 }
 
-func NewBookServiceImpl(br repository.BookRepository) BookService {
-	return &bookServiceImpl{br}
+func NewBookServiceImpl(br repository.BookRepository, db *sql.DB) BookService {
+	return &bookServiceImpl{br, db}
 }
 
 func (b *bookServiceImpl) Create(ctx *gin.Context, bookDto *dto.NewBookRequest) (*dto.BookResponse, errs.CustomError) {
 	book := &domain.Book{Title: bookDto.Title, Author: bookDto.Author}
 
-	result, err := b.br.Create(ctx, book)
+	result, err := b.br.Create(ctx, b.db, book)
 
 	if err != nil {
 		return nil, err
@@ -30,7 +32,7 @@ func (b *bookServiceImpl) Create(ctx *gin.Context, bookDto *dto.NewBookRequest) 
 }
 
 func (b *bookServiceImpl) FindOneById(ctx *gin.Context, bookId uint) (*dto.BookResponse, errs.CustomError) {
-	result, err := b.br.FindOneById(ctx, bookId)
+	result, err := b.br.FindOneById(ctx, b.db, bookId)
 
 	if err != nil {
 		return nil, err
@@ -40,7 +42,7 @@ func (b *bookServiceImpl) FindOneById(ctx *gin.Context, bookId uint) (*dto.BookR
 }
 
 func (b *bookServiceImpl) FindAll(ctx *gin.Context) ([]*dto.BookResponse, errs.CustomError) {
-	result, err := b.br.FindAll(ctx)
+	result, err := b.br.FindAll(ctx, b.db)
 
 	if err != nil {
 		return nil, err
